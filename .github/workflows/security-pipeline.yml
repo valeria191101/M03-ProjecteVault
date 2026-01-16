@@ -1,5 +1,4 @@
-kname: Security Pipeline  # CORREGIT
-
+name: Security Pipeline  # CORREGIT
 on:
   push:
     branches: [ main, master ]
