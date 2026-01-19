@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
+import sys
 
 
 # Configurar opcions de Chrome
@@ -37,6 +38,7 @@ try:
         
         if "ACCESS_GRANTED" in driver.find_element(By.ID, 'message').text:
             print(f"VULNERABILITAT TROBADA! Contrasenya: {pwd}")
+            sys.exit(1)
             driver.save_screenshot('hacked.png')
             break
     
