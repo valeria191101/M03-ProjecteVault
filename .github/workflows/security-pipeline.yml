@@ -134,8 +134,7 @@ jobs:
       if: failure() && steps.security-scan.outcome == 'failure'
       uses: actions/upload-artifact@v4
       with:
-        name: security-evidence
-        path: |
-          vulnerability_found.png
-          attack_bot_ci.py
+        name: Test with unittest
+        run: |
+          python -m unittest test_security.py test_vault.py
 
