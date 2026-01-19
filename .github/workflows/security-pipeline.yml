@@ -1,42 +1,44 @@
-name: Security Pipeline
+name: Security and Testing Pipeline
 
-# S'executa a cada push a la branca main
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
 
 jobs:
-  security-audit:
+  unit-testing:
+    name: Run Unit Tests
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Baixar el codi del repositori
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 2. Configurar l'entorn de Python
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
-
-      # 3. Instal·lar Selenium (única dependència necessària)
+          python-version: '3.9'
       - name: Install dependencies
         run: |
+          pip install pytest hvac  # Ajusta segons les teves llibreries
+      - name: Execute Vault Tests
+        run: pytest test_vault.py
+
+  security-scan:
+    name: Security Attack Simulation
+    needs: unit-testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install Selenium and Driver
+        run: |
           pip install selenium
+      - name: Run Attack Bot (Headless)
+        run: python attack_bot.py
 
-      # 4. PAS 1: Unit Testing (Part 2 de la pràctica)
-      # Executem els tests que verifiquen la lògica de la vault
-      - name: Step 1 - Unit Testing
-        run: |
-          python -m unittest test_vault.py
 
-      # 5. PAS 2: Security Scan / DAST (Part 3 i 4 de la pràctica)
-      # Executem el bot d'atac. Si el bot troba la clau i fa un sys.exit(1), 
-      # aquest pas sortirà en vermell (Semàfor de seguretat).
-      - name: Step 2 - Security Scan (Attack Bot)
-        run: |
-          python attack_bot.py
-        run: |
+
           python -m unittest test_security.py test_vault.py
 
